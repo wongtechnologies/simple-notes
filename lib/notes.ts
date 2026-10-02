@@ -49,3 +49,28 @@ export async function deleteNote(id: string): Promise<void> {
 export function newNoteId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
+export async function togglePin(id: string): Promise<void> {
+  const notes = await loadNotes();
+  const note = notes.find((n) => n.id === id);
+  if (!note) return;
+  note.pinned = !note.pinned;
+  await saveNotes(notes);
+}
+
+export function filterAndSortNotes(notes: Note[], query: string): Note[] {
+  const q = query.trim().toLowerCase();
+
+  const matches =
+    q === ""
+      ? notes
+      : notes.filter(
+          (note) =>
+            note.title.toLowerCase().includes(q) ||
+            note.body.toLowerCase().includes(q)
+        );
+
+  return [...matches].sort((a, b) => {
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+    return b.updatedAt - a.updatedAt;
+  });
+}
