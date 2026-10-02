@@ -1,5 +1,6 @@
 import { Link, Stack } from "expo-router";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context"; // NEW
 
 // Temporary fake data so we can test navigation. Replaced with real notes on Day 3.
 const SAMPLE_NOTES = [
@@ -8,8 +9,11 @@ const SAMPLE_NOTES = [
 ];
 
 export default function NotesListScreen() {
+  const insets = useSafeAreaInsets(); // NEW: how much space the phone's system bars take
+
   return (
-    <View style={styles.container}>
+    // NEW: extra bottom padding so the button sits above Android's navigation bar
+    <View style={[styles.container, { paddingBottom: 16 + insets.bottom }]}>
       <Stack.Screen
         options={{
           headerRight: () => (
