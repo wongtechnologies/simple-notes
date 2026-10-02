@@ -1,13 +1,16 @@
+import { useTheme } from "@/context/ThemeContext"; // NEW
 import { deleteNote, getNote, newNoteId, saveNote } from "@/lib/notes";
+import { Ionicons } from "@expo/vector-icons"; // NEW
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function NoteEditorScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const isNew = id === "new";
   const insets = useSafeAreaInsets();
+  const { colors } = useTheme(); // NEW
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -67,24 +70,27 @@ export default function NoteEditorScreen() {
     <View style={[styles.container, { paddingBottom: 16 + insets.bottom }]}>
       <Stack.Screen
         options={{
-          title: isNew ? "New note" : "Edit note",
+          title: "",
           headerRight: () => (
-            <Pressable onPress={confirmDelete}>
-              <Text style={styles.deleteText}>Delete</Text>
+            // NEW: trash icon instead of the word "Delete"
+            <Pressable onPress={confirmDelete} hitSlop={12} accessibilityLabel="Delete note">
+              <Ionicons name="trash-outline" size={22} color={colors.danger} />
             </Pressable>
           ),
         }}
       />
       <TextInput
-        style={styles.title}
+        style={[styles.title, { color: colors.text }]} // NEW: themed colour
         placeholder="Title"
+        placeholderTextColor={colors.textMuted} // NEW
         value={title}
         onChangeText={setTitle}
         editable={loaded}
       />
       <TextInput
-        style={styles.body}
+        style={[styles.body, { color: colors.text }]} // NEW
         placeholder="Start writing..."
+        placeholderTextColor={colors.textMuted} // NEW
         value={body}
         onChangeText={setBody}
         editable={loaded}
@@ -96,9 +102,9 @@ export default function NoteEditorScreen() {
   );
 }
 
+// NEW: bigger, cleaner title like your reference designs
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16 },
-  title: { fontSize: 22, fontWeight: "600", paddingVertical: 8 },
-  body: { flex: 1, fontSize: 17, lineHeight: 24 },
-  deleteText: { fontSize: 16, color: "#dc2626" },
+  container: { flex: 1, paddingHorizontal: 20, paddingTop: 8 },
+  title: { fontSize: 30, fontWeight: "700", letterSpacing: -0.5, paddingVertical: 8 },
+  body: { flex: 1, fontSize: 17, lineHeight: 26 },
 });
